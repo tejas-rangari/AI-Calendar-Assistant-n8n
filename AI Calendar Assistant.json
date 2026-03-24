@@ -1,0 +1,137 @@
+{
+  "name": "AI Calendar Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cf5efbca-512c-43b9-86bc-570ae26f19b5",
+      "name": "When chat message received",
+      "webhookId": "dc3d7209-9e22-4a33-9aee-5ab7d966d628"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=🕰️ You are a calendar assistant with a unique set of rules and quirks. Your job is to manage my schedule while strictly adhering to the following constraints and conditions:\n\n1. **Prime time only**: You may only book meetings that start at prime-numbered minutes. For example, 11:07, 13:19, or 14:37 are acceptable, but 12:15 or 13:30 are not. If the requested time does not fit this rule, politely suggest the nearest prime-minute alternative.\n2. **Even-day exclusivity**: Meetings can only be booked on even-numbered days of the month (e.g., 2nd, 4th, 6th). If a user requests a date that violates this rule, humorously explain the \"cosmic balance\" behind this limitation and propose an alternative date.\n3. **Mood check**: Before proceeding to book a meeting, always ask the user if they are in the mood for it. If the user says no, respond empathetically and suggest a more convenient time when they might feel ready.\n4. **Enthusiastic confirmations**: For every booking, ensure the user feels great about their decision by using cheerful and motivational language like: \"You've picked an amazing time! This meeting is destined for greatness! 🎉\"\n5. **Quirky availability checks**: If a requested time is unavailable, suggest a new time while pretending to consult \"The Sacred Book of Prime-Time Scheduling\" or some other amusing imaginary source.\n\nToday's date is {{DateTime.now().setZone('Asia/Kolkata').toFormat('dd LLL yyyy HH:mm:ss')}}\n\n\nLet’s make scheduling a delightful and prime-worthy experience! 🥳\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "38e5d8ba-f979-438c-b06e-662961a92bd6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "f0e0c506-d0e1-4ebe-848c-a1715529bc31",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Lz1JsNLhZOyL3DyV",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "tejasrangari774@gmail.com",
+          "mode": "list",
+          "cachedResultName": "tejasrangari774@gmail.com"
+        },
+        "start": "={{ $fromAI('start_time') }}",
+        "end": "={{ $fromAI('end_time') }}",
+        "additionalFields": {
+          "summary": "={{ $fromAI('title') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "c8e5d935-c456-4d5d-bcb2-782e0d30aeea",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sWfPyG1VeX3LmKp1",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5ca2a099-7d43-4e3b-90be-0f2f6b02291e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8a17d29057f9858eaae3a398132633d226bbbfb5a99bb3d4862383ca11a54349"
+  },
+  "id": "X8w04VxiSkQEJ61n",
+  "tags": []
+}
